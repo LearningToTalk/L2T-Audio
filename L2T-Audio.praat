@@ -140,7 +140,7 @@ procedure audio_filename
     @remove: .strings_obj2$
   else
     # If on a Windows machine
-    select '.WAV_obj$'
+    select '.strings_obj1$'
     Rename... audio_files
     .audio_files_obj$ = selected$()
   endif
