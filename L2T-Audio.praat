@@ -83,9 +83,9 @@ endproc
 
 
 
-procedure audio_extension
-  .extension$ = if (macintosh or unix) then ".WAV" else ".wav" endif
-endproc
+#procedure audio_extension
+#  .extension$ = if (macintosh or unix) then ".WAV" else ".wav" endif
+#endproc
 
 
 
@@ -93,11 +93,11 @@ endproc
 procedure audio_pattern: .directory$
                      ... .experimental_task$
                      ... .participant_number$
-                     ... .extension$
+#                     ... .extension$
   if .directory$ != ""
     .pattern$ = .directory$ + "/" + 
-            ... .experimental_task$ + "_" + .participant_number$ + "*" + 
-            ... .extension$
+            ... .experimental_task$ + "_" + .participant_number$ + "*"
+#            ... .extension$
   else
     .pattern$ = ""
   endif
@@ -106,9 +106,46 @@ endproc
 
 
 
-procedure audio_filename: .pattern$
-  @filename_from_pattern: .pattern$, "audio file"
-  .filename$ = filename_from_pattern.filename$
+# procedure audio_filename: .pattern$
+#   @filename_from_pattern: .pattern$, "audio file"
+#   .filename$ = filename_from_pattern.filename$
+# endproc
+
+procedure audio_filename
+  # Import string variables from other namespaces.
+  .directory$ = audio_directory.directory$
+  .experimental_task$ = session_parameters.experimental_task$
+  .participant_number$ = session_parameters.participant_number$
+  # Use the imported string variables to create a base pattern for finding
+  # audio files.
+  .base_pattern$ = .directory$ + "/" + .experimental_task$ + "_" +
+               ... .participant_number$ + "*"
+  # Create a Strings Object using 
+  .pattern1$ = .base_pattern$ + ".WAV"
+  Create Strings as file list: "WAV_files", .pattern1$
+  .strings_obj1$ = selected$()
+  if (macintosh or unix)
+    # If on a Mac or a Unix machine, also search for audio files whose extension
+    # is .wav.
+    .pattern2$ = .base_pattern$ + ".wav"
+    Create Strings as file list: "wav_files", .pattern2$
+    .strings_obj2$ = selected$()
+    # Append the two String objects.
+    select '.strings_obj1$'
+    plus '.strings_obj2$'
+    Append
+    Rename... audio_files
+    .audio_files_obj$ = selected$()
+    @remove: .strings_obj1$
+    @remove: .strings_obj2$
+  else
+    # If on a Windows machine
+    select '.strings_obj1$'
+    Rename... audio_files
+    .audio_files_obj$ = selected$()
+  endif
+  @filename_from_strings: .audio_files_obj$, "audio file"
+  .filename$ = filename_from_strings.filename$
 endproc
 
 
@@ -164,19 +201,19 @@ procedure audio
   @audio_directory: .workstation$, .experimental_task$, .testwave$
   .directory$ = audio_directory.directory$
   
-  # Set the [.extension$] of the audio recordings.
-  @audio_extension
-  .extension$ = audio_extension.extension$
-  
-  # Set the [.pattern$] used to find audio recordings.
-  @audio_pattern: .directory$, 
-              ... .experimental_task$, 
-              ... .participant_number$,
-              ... .extension$
-  .pattern$ = audio_pattern.pattern$
+  # # Set the [.extension$] of the audio recordings.
+  # @audio_extension
+  # .extension$ = audio_extension.extension$
+  #
+  # # Set the [.pattern$] used to find audio recordings.
+  # @audio_pattern: .directory$,
+  #             ... .experimental_task$,
+  #             ... .participant_number$,
+  #             ... .extension$
+  # .pattern$ = audio_pattern.pattern$
   
   # Set the [.filename$] of the audio recording.
-  @audio_filename: .pattern$
+  @audio_filename
   .filename$ = audio_filename.filename$
   
   # Set the [.read_from$] and [.write_to$] filepaths of the audio recording.
