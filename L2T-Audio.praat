@@ -24,48 +24,48 @@ endproc
 procedure audio_directory: .workstation$, .experimental_task$, .testwave$
 	# Set the main trunk of the [.directory$] of the audio files for the current [.workstation$].
 	@workstations
-	if .workstation$ == workstations.default$
+	if .workstation$ ==  workstations.slot$ [1]
 		# Default setup. 14 = the string length for "\PraatScripts\"
 		.dirLength = rindex_regex (defaultDirectory$, "/|\\") - 14
 		.directory$ = left$(defaultDirectory$, .dirLength)
-	elif .workstation$ == workstations.waisman$
+	elif .workstation$ == workstations.slot$ [2]
 		# Waisman Lab (UW) setup...
 		.directory$ = "L:/DataAnalysis"
-	elif .workstation$ == workstations.shevlin$
+	elif .workstation$ == workstations.slot$ [3]
 		# Shevlin Hall (UMN) setup...
 		.directory$ = "//l2t.cla.umn.edu/tier2/DataAnalysis"
-	elif .workstation$ == workstations.mac_rdc$
+	elif .workstation$ == workstations.slot$ [4]
 		.directory$ = "I:/DataAnalysis"
-	elif .workstation$ == workstations.mac_vpn$
+	elif .workstation$ == workstations.slot$ [5]
 		.directory$ = "/Volumes/tier2onUSB/DataAnalysis"
-	elif .workstation$ == workstations.beckman$
+	elif .workstation$ == workstations.slot$ [6]
 		# Mary's set-up, where audio is accessed locally...
 		.directory$ = "/LearningToTalk/Tier2/DataAnalysis"
-	elif .workstation$ == workstations.reidy_vpn$
+	elif .workstation$ == workstations.slot$ [7]
 		# Pat's setup where the audio is accessed through a VPN connection...
 		.directory$ = "/Volumes/tier2/DataAnalysis"
-	elif .workstation$ == workstations.reidy_split$
+	elif .workstation$ == workstations.slot$ [8]
 		# Pat's setup where the audio is accessed locally, but the other data are accessed through a VPN connection...
  		.directory$ = "/Volumes/liveoak/LearningToTalk"
-	elif .workstation$ == workstations.hannele$
+	elif .workstation$ == workstations.slot$ [9]
  		.directory$ = "Z:/DataAnalysis"
-	elif .workstation$ == workstations.rose_vpn$
+	elif .workstation$ == workstations.slot$ [10]
 		.directory$ = "/Volumes/tier2/DataAnalysis"
-	elif .workstation$ == workstations.rose_split$
+	elif .workstation$ == workstations.slot$ [11]
 		.directory$ = "/Volumes/tier2onUSB/DataAnalysis"
-	elif .workstation$ == workstations.allie_laptop$
+	elif .workstation$ == workstations.slot$ [12]
 		.directory$ = "/Volumes/tier2/DataAnalysis"
-	elif .workstation$ == workstations.other$
+	elif .workstation$ == workstations.slot$ [13]
 		# Some previously un-encountered setup...
 		.directory$ = ""
 	endif
 	# Complete the [.directory$] path only if the [.workstation$] has been previously encountered.
-	if .workstation$ != workstations.other$
+	if .workstation$ !=  "Other"
 		.directory$ = .directory$ + "/" +
 			... .experimental_task$ + "/" +
 			... .testwave$
 	# The organization of the recordings on Pat's external drive (i.e., when the [.workstation$] is [workstations.reidy_split$]) differs from how these files are organized for every other workstation.  So, [.directory$] must be completed differently for different workstations.
-	if .workstation$ == workstations.reidy_split$
+	if .workstation$ == "Reidy (Split)"
 		.directory$ = .directory$ + "/" + "Audio"
 	else
 		.directory$ = .directory$ + "/" + "Recordings"
